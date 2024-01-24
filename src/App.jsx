@@ -1,6 +1,6 @@
-import LeftBar from "./pages/components/leftBar/LeftBar.jsx";
-import RightBar from "./pages/components/rightBar/RightBar.jsx";
-import NavBar from "./pages/components/navBar/NavBar.jsx";
+import Navbar from "./components/navBar/NavBar";
+import LeftBar from "./components/leftBar/LeftBar";
+import RightBar from "./components/rightBar/RightBar";
 import Login from "./pages/login/Login.jsx";
 import Register from "./pages/register/Register.jsx";
 import Home from "./pages/home/Home.jsx";
@@ -11,15 +11,17 @@ import {
   Route,
   Link,
   Outlet,
+  Navigate
 } from "react-router-dom";
 
 
 function App() {
-  const Layout = ()=>{
+  const currentUser = true
+  const Layout = () => {
     return (
-      <div>
-        <NavBar />
-        <div style={{display: 'flex'}}>
+      <div className="theme-light">
+        <Navbar />
+        <div style={{ display: 'flex' }}>
           <LeftBar />
           <Outlet />
           <RightBar />
@@ -27,15 +29,27 @@ function App() {
       </div>
     )
   }
+
+  const ProtectedRoute = ({ children }) => {
+    if (!currentUser) {
+      return <Navigate to="/login" />
+    }
+
+    return children
+  }
   return <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Home />} />
         <Route path="profile/:id" element={<Profile />} />
       </Route>
       <Route path="login" element={<Login />} />
       <Route path="register" element={<Register />} />
-        {/* <Route path=":id" element={<UserProfile />} /> */}
+      {/* <Route path=":id" element={<UserProfile />} /> */}
     </Routes>
   </BrowserRouter>;
 }
